@@ -1,9 +1,4 @@
 import("stdfaust.lib");
-//
-// inspect(i, lower, upper) = _ <: attach(_ ,
-//                                        _ : vbargraph("sig_%i [style:numerical]",
-//                                                        lower,
-//                                                        upper));
 
 oscillator = hgroup("[01] OSCILLATOR", os.oscsin(freq) : *(ampl) : +(offset))
   with{
