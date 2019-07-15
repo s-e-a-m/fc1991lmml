@@ -1,6 +1,3 @@
-// ----------------------------- First Order B-Format Ambisonic Mixer
-// ------------------------------------------- made by Giuseppe Silvi
-
 declare name "Mobile Locale";
 declare version "001";
 declare author "Giuseppe Silvi";
