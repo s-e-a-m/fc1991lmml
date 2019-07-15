@@ -1,3 +1,13 @@
+// ----------------------------- First Order B-Format Ambisonic Mixer
+// ------------------------------------------- made by Giuseppe Silvi
+
+declare name "Mobile Locale";
+declare version "001";
+declare author "Giuseppe Silvi";
+declare copyright "Giuseppe Silvi 2019";
+declare reference "giuseppesilvi.com";
+declare description "Michelangelo Lupone, Mobile Locale - FLY30 Porting";
+
 import("stdfaust.lib");
 
 oscillator = hgroup("[01] OSCILLATOR", os.oscsin(freq) : *(ampl) : +(offset))
@@ -41,16 +51,16 @@ readIndex2 = step2/float(ma.SR) : (+ : ma.decimal) ~ _ : *(float(maxdel2)) : int
 rw_del2 = _ : rwtable(tableSize,0.0,recIndex2,_,readIndex2);
 rw_del_fb2 = *(1.0) : (- : rw_del2) ~ *(1.0);
 
-run = oscillator, _ <: delay_line, !,_ : *(gain), early_reflections_8_comb_filters <: _,_,_,_,_,rw_del_fb1,!,!,!,!,!,rw_del_fb2;
+// run = oscillator, _ <: delay_line, !,_ : *(gain), early_reflections_8_comb_filters <: _,_,_,_,_,rw_del_fb1,!,!,!,!,!,rw_del_fb2;
+//
+// info = vgroup("INFO",
+//        hgroup("[01] System", sr_info, block_info),
+//        hgroup("[02] Delays", del1_info, del2_info))
+//   with{
+//     sr_info = ma.SR : hbargraph("[01] SR [style:numerical]",0,192000);
+//     block_info = ma.BS : hbargraph("[02] BS [style:numerical]",0,4092);
+//     del1_info = maxdel1 : hbargraph("[01] Max Delay 1 [style:numerical] [unit:samples]",0,262144);
+//     del2_info = maxdel2 : hbargraph("[02] Max Delay 2 [style:numerical] [unit:samples]",0,262144);
+//   };
 
-info = vgroup("INFO",
-       hgroup("[01] System", sr_info, block_info),
-       hgroup("[02] Delays", del1_info, del2_info))
-  with{
-    sr_info = ma.SR : hbargraph("[01] SR [style:numerical]",0,192000);
-    block_info = ma.BS : hbargraph("[02] BS [style:numerical]",0,4092);
-    del1_info = maxdel1 : hbargraph("[01] Max Delay 1 [style:numerical] [unit:samples]",0,262144);
-    del2_info = maxdel2 : hbargraph("[02] Max Delay 2 [style:numerical] [unit:samples]",0,262144);
-  };
-
-process = run, info;
+process = oscillator, _ <: delay_line, !,_ : *(gain), early_reflections_8_comb_filters <: _,_,_,_,_,rw_del_fb1,!,!,!,!,!,rw_del_fb2;
