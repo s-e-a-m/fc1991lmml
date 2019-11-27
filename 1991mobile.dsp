@@ -1,4 +1,4 @@
-declare name "Mobile Locale";
+declare name "Michelangelo Lupone. Mobile Locale - 1991";
 declare version "001";
 declare author "Giuseppe Silvi";
 declare copyright "Giuseppe Silvi 2019";
@@ -7,57 +7,62 @@ declare description "Michelangelo Lupone, Mobile Locale - FLY30 Porting";
 
 import("stdfaust.lib");
 
-oscillator = hgroup("[01] OSCILLATOR", os.oscsin(freq) : *(ampl) : +(offset))
-  with{
-    freq = vslider("[01] FREQUENCY [style:knob]", 1,0.1,320,0.1) : si.smoo;
-    ampl = vslider("[02] AMPLITUDE [style:knob]", 0,0,1,0.01) : si.smoo;
-    offset = vslider("[03] OFFSET [style:knob]", 0,0,1,0.01) : si.smoo;
-};
+oscgroup(x) = hgroup("[01] OSCILLATOR", x);
 
-delay_line(step,x) = de.fdelayltv(1,ba.sec2samp(0.046), ba.sec2samp(0.046)*(step), x)
+poscil = oscgroup(os.oscsin(freq) : *(amp) : +(amp))
   with{
-    step = oscillator;
+    freq = vslider("[01] QF [style:knob]", 0.1,0.1,320,0.01) : si.smoo;
+    amp = vslider("[02] QA [style:knob]", 0.5,0.0,0.5,0.01) : si.smoo;
   };
 
-gain = vslider("[02] GAIN [style:knob]", 0,0,5,0.01) : si.smoo;
+qaqf(x) = de.fdelayltv(1,writesize, poscil*(writesize), x) : *(gain) <: _,_*(0),_,*(0)
+  with{
+    writesize = ba.sec2samp(0.046);
+    gain = oscgroup(vslider("[03] GAIN [style:knob]", 0,0,5,0.01) : si.smoo);
+  };
 
-early_reflections_8_comb_filters = _ <:
-  fi.fb_comb(ma.SR, ba.sec2samp(0.087),.5,.5) + fi.fb_comb(ma.SR, ba.sec2samp(0.026),.5,.5),
-  fi.fb_comb(ma.SR, ba.sec2samp(0.032),.5,.5) + fi.fb_comb(ma.SR, ba.sec2samp(0.053),.5,.5),
-  fi.fb_comb(ma.SR, ba.sec2samp(0.074),.5,.5) + fi.fb_comb(ma.SR, ba.sec2samp(0.047),.5,.5),
-  fi.fb_comb(ma.SR, ba.sec2samp(0.059),.5,.5) + fi.fb_comb(ma.SR, ba.sec2samp(0.022),.5,.5) <: _,_,_,_,+++;
+er8comb = _ <:
+  0.5*(fi.fb_comb(ma.SR, ba.sec2samp(0.087),.5,.5) + fi.fb_comb(ma.SR, ba.sec2samp(0.026),.5,.5)),
+  0.5*(fi.fb_comb(ma.SR, ba.sec2samp(0.032),.5,.5) + fi.fb_comb(ma.SR, ba.sec2samp(0.053),.5,.5)),
+  0.5*(fi.fb_comb(ma.SR, ba.sec2samp(0.074),.5,.5) + fi.fb_comb(ma.SR, ba.sec2samp(0.047),.5,.5)),
+  0.5*(fi.fb_comb(ma.SR, ba.sec2samp(0.059),.5,.5) + fi.fb_comb(ma.SR, ba.sec2samp(0.022),.5,.5)) <:
+  *(gain), *(gain), *(gain), *(gain),_,_,_,_
+    with{
+      gain = hgroup("[02] ER COMB",vslider("[01] ER OUT [style:knob]", 0,0,1.5,0.01) : si.smoo);
+  };
 
-// linee di ritardo con scrittura e lettura indipendenti
-// parametri condivisi
-tableSize = 262144;
-counter = +(1)~_;
-// parametri particolari UNO
-del1 = 0.046;
-step1 = 1.02246093;
-maxdel1 = ba.sec2samp(del1) : int;
-recIndex1 = (counter : %(maxdel1));
-readIndex1 = step1/float(ma.SR) : (+ : ma.decimal) ~ _ : *(float(maxdel1)) : int;
-rw_del1 = _ : rwtable(tableSize,0.0,recIndex1,_,readIndex1);
-rw_del_fb1 = *(1.0) : (- : rw_del1) ~ *(1.0);
-// parametri particolari DUE
-del2 = 0.023;
-step2 = 0.99609327;
-maxdel2 = ba.sec2samp(del2) : int;
-recIndex2 = (counter : %(maxdel2));
-readIndex2 = step2/float(ma.SR) : (+ : ma.decimal) ~ _ : *(float(maxdel2)) : int;
-rw_del2 = _ : rwtable(tableSize,0.0,recIndex2,_,readIndex2);
-rw_del_fb2 = *(1.0) : (- : rw_del2) ~ *(1.0);
+envelop         = abs : max ~ -(1.0/ma.SR) : max(ba.db2linear(-70)) : ba.linear2db;
 
-// run = oscillator, _ <: delay_line, !,_ : *(gain), early_reflections_8_comb_filters <: _,_,_,_,_,rw_del_fb1,!,!,!,!,!,rw_del_fb2;
-//
-// info = vgroup("INFO",
-//        hgroup("[01] System", sr_info, block_info),
-//        hgroup("[02] Delays", del1_info, del2_info))
-//   with{
-//     sr_info = ma.SR : hbargraph("[01] SR [style:numerical]",0,192000);
-//     block_info = ma.BS : hbargraph("[02] BS [style:numerical]",0,4092);
-//     del1_info = maxdel1 : hbargraph("[01] Max Delay 1 [style:numerical] [unit:samples]",0,262144);
-//     del2_info = maxdel2 : hbargraph("[02] Max Delay 2 [style:numerical] [unit:samples]",0,262144);
-//   };
+inhmeter(x)		= attach(x, envelop(x) : hbargraph("[01] IN [unit:dB]", -70, +5));
 
-process = oscillator, _ <: delay_line, !,_ : *(gain), early_reflections_8_comb_filters <: _,_,_,_,_,rw_del_fb1,!,!,!,!,!,rw_del_fb2;
+h1meter(x)		= attach(x, envelop(x) : hbargraph("[1] CH 1[unit:dB]", -70, +5));
+h2meter(x)		= attach(x, envelop(x) : hbargraph("[2] CH 2[unit:dB]", -70, +5));
+h3meter(x)		= attach(x, envelop(x) : hbargraph("[3] CH 3[unit:dB]", -70, +5));
+h4meter(x)		= attach(x, envelop(x) : hbargraph("[4] CH 4[unit:dB]", -70, +5));
+
+tableSize = 48000;
+
+delsize1 = ba.sec2samp(0.46) : int;
+recIndex1 = (+(1) : %(delsize1)) ~ *(1);
+readIndex1 = 1.02246093/float(ma.SR) : (+ : ma.decimal) ~ _ : *(float(tableSize)) : int;
+fdel1 = rwtable(tableSize,0.0,recIndex1,_,readIndex1);
+
+delsize2 = ba.sec2samp(0.23) : int;
+recIndex2 = (+(1) : %(delsize2)) ~ *(1);
+readIndex2 = 0.99699327/float(ma.SR) : (+ : ma.decimal) ~ _ : *(float(tableSize)) : int;
+fdel2 = rwtable(tableSize,0.0,recIndex2,_,readIndex2);
+
+fdelgroup(x) = hgroup("[03] FEEDBACK DELAY", x);
+
+waf = fdelgroup(vslider("[01] WA FEEDBACK [style:knob]", 0.,0.,1.0,0.01)) : si.smoo;
+wag = fdelgroup(vslider("[01] WA GAIN [style:knob]", 0.,0.,1.0,0.01)) : si.smoo;
+wa = *(wag) : ( - : fdel1) ~ *(waf);
+
+zaf = fdelgroup(vslider("[01] ZA FEEDBACK [style:knob]", 0.,0.,1.0,0.01)) : si.smoo;
+zag = fdelgroup(vslider("[01] ZA GAIN [style:knob]", 0.,0.,1.0,0.01)) : si.smoo;
+za = *(zag) : ( - : fdel2) ~ *(zaf);
+
+fbdel = 0.25*(_+_+_+_) <: wa, za <: _,_,_,_;
+
+ingain = hslider("[00] INPUT GAIN", 0, -70, +12, 0.1) : ba.db2linear : si.smoo;
+process = _*(ingain) : inhmeter <: hgroup("[01] MAIN", qaqf, er8comb : si.bus(8), fbdel) :> vgroup("[99]OUTPUT METERS", h1meter,h2meter,h3meter,h4meter) :> _,_;
