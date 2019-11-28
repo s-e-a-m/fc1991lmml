@@ -27,31 +27,31 @@ er8comb = _ <:
       gain = hgroup("[02] ER COMB",vslider("[01] ER OUT [style:knob]", 0,0,1.5,0.01) : si.smoo);
   };
 
-fbdel = 0.25*(_+_+_+_) <: wa, za <: _,_,_,_
+waza = 0.25*(_+_+_+_) <: wa, za <: _,_,_,_
   with{
     fdelgroup(x) = hgroup("[03] FEEDBACK DELAY", x);
     tableSize = 48000;
     delsize1 = ba.sec2samp(0.46) : int;
     recIndex1 = (+(1) : %(delsize1)) ~ *(1);
-    readIndex1 = 1.02246093/float(ma.SR) : (+ : ma.decimal) ~ _ : *(float(tableSize)) : int;
+    readIndex1 = 1.02246093/float(tableSize) : (+ : ma.decimal) ~ _ : *(float(tableSize)) : int;
     fdel1 = rwtable(tableSize,0.0,recIndex1,_,readIndex1);
     delsize2 = ba.sec2samp(0.23) : int;
     recIndex2 = (+(1) : %(delsize2)) ~ *(1);
-    readIndex2 = 0.99699327/float(ma.SR) : (+ : ma.decimal) ~ _ : *(float(tableSize)) : int;
+    readIndex2 = 0.99699327/float(tableSize) : (+ : ma.decimal) ~ _ : *(float(tableSize)) : int;
     fdel2 = rwtable(tableSize,0.0,recIndex2,_,readIndex2);
     waf = fdelgroup(vslider("[01] WA FEEDBACK [style:knob]", 0.,0.,1.0,0.01)) : si.smoo;
     wag = fdelgroup(vslider("[01] WA GAIN [style:knob]", 0.,0.,1.0,0.01)) : si.smoo;
-    wa = *(wag) : ( - : fdel1) ~ *(waf);
+    wa = *(wag) : ( ro.cross(2) : - : fdel1) ~ *(waf);
     zaf = fdelgroup(vslider("[01] ZA FEEDBACK [style:knob]", 0.,0.,1.0,0.01)) : si.smoo;
     zag = fdelgroup(vslider("[01] ZA GAIN [style:knob]", 0.,0.,1.0,0.01)) : si.smoo;
-    za = *(zag) : ( - : fdel2) ~ *(zaf);
+    za = *(zag) : ( ro.cross(2) : - : fdel2) ~ *(zaf);
   };
 
 ingain = hslider("[00] INPUT GAIN", 0, -70, +12, 0.1) : ba.db2linear : si.smoo;
 
 process = _*(ingain) : inmeter <:
-        hgroup("[01] MAIN", qaqf, er8comb : si.bus(8), fbdel) :>
-        vgroup("[99]OUTPUT METERS", h1meter,h2meter,h3meter,h4meter) :> _,_ ;
+        hgroup("[01] MAIN", qaqf, er8comb : si.bus(8), waza) :>
+        vgroup("[99] OUTPUT METERS", h1meter,h2meter,h3meter,h4meter) :> _,_ ;
 
 // METERS
 envelop = abs : max ~ -(1.0/ma.SR) : max(ba.db2linear(-70)) : ba.linear2db;
