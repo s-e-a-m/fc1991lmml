@@ -1,6 +1,4 @@
-# fc1991lmml
-
-## 1991 - Michelangelo Lupone - Mobile Locale - Faust Code
+# 1991 - Michelangelo Lupone - Mobile Locale - Faust Code
 
 For the composition *Mobile Locale* in 1991, Lupone had realized electronics on
 his *FLY30* workstation. Both live electronics and tape electronics were programmed
