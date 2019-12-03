@@ -11,6 +11,10 @@ not by the *FLY* code itself, but the fine-tuning and the impulse response of
 each block will be done with the composer and the *FLY* machine to compare code
 and sound qualities.
 
-## General diagram
+## Score general diagram
 
-![diagramma](https://raw.githubusercontent.com/s-e-a-m/s-e-a-m.github.io/master/img/blog/ML-ESTRATTO.jpeg)
+![scorediagram](https://raw.githubusercontent.com/s-e-a-m/s-e-a-m.github.io/master/img/blog/ML-ESTRATTO.jpeg)
+
+## Porting general diagram
+
+![portingdiagram](https://github.com/s-e-a-m/fc1991lmml/blob/master/1991mobile-svg/process.svg)
