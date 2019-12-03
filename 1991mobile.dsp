@@ -51,7 +51,7 @@ ingain = hslider("[00] INPUT GAIN", 0, -70, +12, 0.1) : ba.db2linear : si.smoo;
 
 process = _*(ingain) : inmeter <:
         hgroup("[01] MAIN", qaqf, er8comb : si.bus(8), waza) :>
-        vgroup("[99] OUTPUT METERS", h1meter,h2meter,h3meter,h4meter) :> _,_ ;
+        vgroup("[99] OUTPUT METERS", h1meter,h2meter,h3meter,h4meter) ;// :> _,_ ;
 
 // METERS
 envelop = abs : max ~ -(1.0/ma.SR) : max(ba.db2linear(-70)) : ba.linear2db;
