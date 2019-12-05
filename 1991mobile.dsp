@@ -14,12 +14,6 @@ oscgroup(x) = qaqfgroup(hgroup("[01] OSCILLATOR", x));
 delgroup(x) = qaqfgroup(hgroup("[02] DELAY", x));
 ergroup(x) = maingroup(hgroup("[02] EARLY REFLECTIONS", x));
 
-//---------------------------------------------------------------- INPUT SECTION
-input = *(ingain) : inmeter
-  with{
-    ingain = hslider("[00] INPUT GAIN", 0, -70, +12, 0.1) : ba.db2linear : si.smoo;
-  };
-
 //-------------------------------------------------- UNIPOLAR POITIVE OSCILLATOR
 poscil = oscgroup(os.oscsin(freq) : *(amp) : +(amp))
    with{
@@ -89,17 +83,27 @@ waza = _ <: wa, za <: _,_,_,_
     zag = fdelgroup(vslider("[01] ZA GAIN [style:knob]", 0.,0.,1.0,0.01)) : si.smoo;
 };
 
-process = input <:
-          qaqf, (er8comb <: si.bus(4), (ermix : waza)) :>
-          vgroup("[99] OUTPUT METERS", h1meter,h2meter,h3meter,h4meter) ; // :> lrmix ;
+//------------------------------------------------------------------------- MAIN
+//------------------------------------- here only the objects described in score
+main = _ <: qaqf, (er8comb <: si.bus(4), (ermix : waza)) :> _,_,_,_;
+
+
+input = *(ingain) : inmeter
+  with{
+    ingain = hslider("[00] INPUT GAIN", 0, -70, +12, 0.1) : ba.db2linear : si.smoo;
+    inmeter(x) = attach(x, an.amp_follower(0.150, x) : ba.linear2db : hbargraph("[01] INPUT METER [unit:dB]", -70, +5));
+  };
+
+//---------------------------------------------------------------- OUTPUT SECTION
+outs = vgroup("[99] OUTPUT METERS", ch1meter, ch2meter, ch3meter, ch4meter)
+  with{
+    ch1meter(x) = attach(x, an.amp_follower(0.150, x) : ba.linear2db : hbargraph("[01] CH 1[unit:dB]", -70, +5));
+    ch2meter(x) = attach(x, an.amp_follower(0.150, x) : ba.linear2db : hbargraph("[02] CH 2[unit:dB]", -70, +5));
+    ch3meter(x) = attach(x, an.amp_follower(0.150, x) : ba.linear2db : hbargraph("[03] CH 3[unit:dB]", -70, +5));
+    ch4meter(x) = attach(x, an.amp_follower(0.150, x) : ba.linear2db : hbargraph("[04] CH 4[unit:dB]", -70, +5));
+  };
 
 //----------------------------------------------------------------------- LR-MIX
-lrmix = _,_; // only for writing, not for live
+lrmix = _,_; // only for monitoring, not for live
 
-// METERS
-envelop = abs : max ~ -(1.0/ma.SR) : max(ba.db2linear(-70)) : ba.linear2db;
-inmeter(x) = attach(x, envelop(x) : hbargraph("[01] INPUT METER [unit:dB]", -70, +5));
-h1meter(x) = attach(x, envelop(x) : hbargraph("[01] CH 1[unit:dB]", -70, +5));
-h2meter(x) = attach(x, envelop(x) : hbargraph("[02] CH 2[unit:dB]", -70, +5));
-h3meter(x) = attach(x, envelop(x) : hbargraph("[03] CH 3[unit:dB]", -70, +5));
-h4meter(x) = attach(x, envelop(x) : hbargraph("[04] CH 4[unit:dB]", -70, +5));
+process = input : main : outs ; // :> lrmix ;
