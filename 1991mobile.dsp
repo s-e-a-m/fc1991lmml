@@ -7,29 +7,66 @@ declare description "Michelangelo Lupone, Mobile Locale - FLY30 Porting";
 
 import("stdfaust.lib");
 
+//----------------------------------------------------------------------- GROUPS
 maingroup(x) = hgroup("[01] MAIN", x);
+qaqfgroup(x) = maingroup(hgroup("[01] QA & QF", x));
+oscgroup(x) = qaqfgroup(hgroup("[01] OSCILLATOR", x));
+delgroup(x) = qaqfgroup(hgroup("[02] DELAY", x));
+ergroup(x) = maingroup(hgroup("[02] EARLY REFLECTIONS", x));
 
-qaqf(x) = de.fdelayltv(1,writesize, poscil*(writesize), x) : *(gain) <: _,*(0),_,*(0)
+//---------------------------------------------------------------- INPUT SECTION
+input = *(ingain) : inmeter
   with{
-    oscgroup(x) = maingroup(hgroup("[01] OSCILLATOR", x));
-    poscil = oscgroup(os.oscsin(freq) : *(amp) : +(amp));
-    freq = vslider("[01] QF [style:knob]", 0.1,0.1,320,0.01) : si.smoo;
-    amp = vslider("[02] QA [style:knob]", 0.5,0.0,0.5,0.01) : si.smoo;
+    ingain = hslider("[00] INPUT GAIN", 0, -70, +12, 0.1) : ba.db2linear : si.smoo;
+  };
+
+//-------------------------------------------------- UNIPOLAR POITIVE OSCILLATOR
+poscil = oscgroup(os.oscsin(freq) : *(amp) : +(amp))
+   with{
+     freq = vslider("[01] QF FRQ [style:knob]", 0.1,0.1,320,0.01) : si.smoo;
+     amp = vslider("[02] QA AMP [style:knob]", 0.5,0.0,0.5,0.01) : si.smoo;
+   };
+
+//process = poscil;
+
+//------------------------------------------------------------------------ QA&QF
+qaqf(x) = de.fdelayltv(1,writesize, readindex, x) : *(gain) <: _,*(0),_,*(0)
+  with{
     writesize = ba.sec2samp(0.046);
-    gain = oscgroup(vslider("[03] GAIN [style:knob]", 0,0,5,0.01) : si.smoo);
+    readindex = poscil*(writesize);
+    gain = delgroup(vslider("[03] QA GAIN [style:knob]", 0,0,5,0.01) : si.smoo);
   };
 
+//process = qaqf;
+
+//------------------------------------------------------------ EARLY REFLECTIONS
 er8comb = _ <:
-  0.5*(fi.fb_comb(ma.SR, ba.sec2samp(0.087),.5,.5) + fi.fb_comb(ma.SR, ba.sec2samp(0.026),.5,.5)),
-  0.5*(fi.fb_comb(ma.SR, ba.sec2samp(0.032),.5,.5) + fi.fb_comb(ma.SR, ba.sec2samp(0.053),.5,.5)),
-  0.5*(fi.fb_comb(ma.SR, ba.sec2samp(0.074),.5,.5) + fi.fb_comb(ma.SR, ba.sec2samp(0.047),.5,.5)),
-  0.5*(fi.fb_comb(ma.SR, ba.sec2samp(0.059),.5,.5) + fi.fb_comb(ma.SR, ba.sec2samp(0.022),.5,.5)) <:
-  *(gain), *(gain), *(gain), *(gain),_,_,_,_
+  g1*(0.5*(fi.fb_comb(maxdel,er1,b0,aN) + fi.fb_comb(maxdel,er2,b0,aN))),
+  g2*(0.5*(fi.fb_comb(maxdel,er3,b0,aN) + fi.fb_comb(maxdel,er4,b0,aN))),
+  g3*(0.5*(fi.fb_comb(maxdel,er5,b0,aN) + fi.fb_comb(maxdel,er6,b0,aN))),
+  g4*(0.5*(fi.fb_comb(maxdel,er7,b0,aN) + fi.fb_comb(maxdel,er8,b0,aN)))
     with{
-      gain = maingroup(hgroup("[02] ER COMB",vslider("[01] ER OUT [style:knob]", 0,0,1.5,0.01)) : si.smoo);
+      maxdel = ma.SR/10 : int;
+      er1 = ba.sec2samp(0.087) : int;
+      er2 = ba.sec2samp(0.026) : int;
+      er3 = ba.sec2samp(0.032) : int;
+      er4 = ba.sec2samp(0.053) : int;
+      er5 = ba.sec2samp(0.074) : int;
+      er6 = ba.sec2samp(0.047) : int;
+      er7 = ba.sec2samp(0.059) : int;
+      er8 = ba.sec2samp(0.022) : int;
+      b0 = .5; // gain applied to delay-line input and forwarded to output
+      aN = .5; // minus the gain applied to delay-line output before sum
+      g1 = ergroup(vslider("[01] ER GAIN1 [style:knob]", 0,0,1.5,0.01)) : si.smoo;
+      g2 = ergroup(vslider("[02] ER GAIN2 [style:knob]", 0,0,1.5,0.01)) : si.smoo;
+      g3 = ergroup(vslider("[03] ER GAIN3 [style:knob]", 0,0,1.5,0.01)) : si.smoo;
+      g4 = ergroup(vslider("[04] ER GAIN4 [style:knob]", 0,0,1.5,0.01)) : si.smoo;
   };
 
-waza = si.bus(4) :> *(0.25) <: wa, za <: _,_,_,_
+ermix = +++:>*(0.25);
+
+//------------------------------------------------------------------------ WA&ZA
+waza = _ <: wa, za <: _,_,_,_
   with{
     fdelgroup(x) = maingroup(hgroup("[03] FEEDBACK DELAY", x));
     tableSize = 96000; // 0.5 ma.SR at 192000
@@ -52,16 +89,12 @@ waza = si.bus(4) :> *(0.25) <: wa, za <: _,_,_,_
     zag = fdelgroup(vslider("[01] ZA GAIN [style:knob]", 0.,0.,1.0,0.01)) : si.smoo;
 };
 
-input = *(ingain) : inmeter
-  with{
-    ingain = hslider("[00] INPUT GAIN", 0, -70, +12, 0.1) : ba.db2linear : si.smoo;
-  };
-
-lrmix = _,_; // only for writing, not for live
-
 process = input <:
-          qaqf, er8comb : si.bus(8), waza :>
+          qaqf, (er8comb <: si.bus(4), (ermix : waza)) :>
           vgroup("[99] OUTPUT METERS", h1meter,h2meter,h3meter,h4meter) ; // :> lrmix ;
+
+//----------------------------------------------------------------------- LR-MIX
+lrmix = _,_; // only for writing, not for live
 
 // METERS
 envelop = abs : max ~ -(1.0/ma.SR) : max(ba.db2linear(-70)) : ba.linear2db;
