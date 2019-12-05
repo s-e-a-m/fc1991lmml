@@ -17,8 +17,8 @@ ergroup(x) = maingroup(hgroup("[02] EARLY REFLECTIONS", x));
 //-------------------------------------------------- UNIPOLAR POITIVE OSCILLATOR
 poscil = oscgroup(os.oscsin(freq) : *(amp) : +(amp))
    with{
-     freq = vslider("[01] QF FRQ [style:knob]", 0.1,0.1,320,0.01) : si.smoo;
-     amp = vslider("[02] QA AMP [style:knob]", 0.5,0.0,0.5,0.01) : si.smoo;
+     freq = vslider("[01] QF FRQ [style:knob] [midi:ctrl 2]", 0.1,0.1,320,0.01) : si.smoo;
+     amp = vslider("[02] QA AMP [style:knob] [midi:ctrl 81]", 0.5,0.0,0.5,0.01) : si.smoo;
    };
 
 //process = poscil;
@@ -28,7 +28,7 @@ qaqf(x) = de.fdelayltv(1,writesize, readindex, x) : *(gain) <: _,*(0),_,*(0)
   with{
     writesize = ba.sec2samp(0.046);
     readindex = poscil*(writesize);
-    gain = delgroup(vslider("[03] QA GAIN [style:knob]", 0,0,5,0.01) : si.smoo);
+    gain = delgroup(vslider("[03] QA GAIN [style:knob][midi:ctrl 82]", 0,0,5,0.01) : si.smoo);
   };
 
 //process = qaqf;
@@ -51,10 +51,10 @@ er8comb = _ <:
       er8 = ba.sec2samp(0.022) : int;
       b0 = .5; // gain applied to delay-line input and forwarded to output
       aN = .5; // minus the gain applied to delay-line output before sum
-      g1 = ergroup(vslider("[01] ER GAIN1 [style:knob]", 0,0,1.5,0.01)) : si.smoo;
-      g2 = ergroup(vslider("[02] ER GAIN2 [style:knob]", 0,0,1.5,0.01)) : si.smoo;
-      g3 = ergroup(vslider("[03] ER GAIN3 [style:knob]", 0,0,1.5,0.01)) : si.smoo;
-      g4 = ergroup(vslider("[04] ER GAIN4 [style:knob]", 0,0,1.5,0.01)) : si.smoo;
+      g1 = ergroup(vslider("[01] ER GAIN1 [style:knob][midi:ctrl 83]", 0,0,1.5,0.01)) : si.smoo;
+      g2 = ergroup(vslider("[02] ER GAIN2 [style:knob][midi:ctrl 84]", 0,0,1.5,0.01)) : si.smoo;
+      g3 = ergroup(vslider("[03] ER GAIN3 [style:knob][midi:ctrl 85]", 0,0,1.5,0.01)) : si.smoo;
+      g4 = ergroup(vslider("[04] ER GAIN4 [style:knob][midi:ctrl 86]", 0,0,1.5,0.01)) : si.smoo;
   };
 
 ermix = +++:>*(0.25);
@@ -77,10 +77,10 @@ waza = _ <: wa, za <: _,_,_,_
     fdel2 = rwtable(tableSize,0.0,recIndex2,_,readIndex2);
     za = *(zag) : ( ro.cross(2) : - : fdel2) ~ *(zaf);
     // WA&ZA INTERFACE
-    waf = fdelgroup(vslider("[01] WA FEEDBACK [style:knob]", 0.,0.,1.0,0.01)) : si.smoo;
-    wag = fdelgroup(vslider("[01] WA GAIN [style:knob]", 0.,0.,1.0,0.01)) : si.smoo;
-    zaf = fdelgroup(vslider("[01] ZA FEEDBACK [style:knob]", 0.,0.,1.0,0.01)) : si.smoo;
-    zag = fdelgroup(vslider("[01] ZA GAIN [style:knob]", 0.,0.,1.0,0.01)) : si.smoo;
+    waf = fdelgroup(vslider("[01] WA FEEDBACK [style:knob] [midi:ctrl 3]", 0.,0.,1.0,0.01)) : si.smoo;
+    wag = fdelgroup(vslider("[01] WA GAIN [style:knob][midi:ctrl 87]", 0.,0.,1.0,0.01)) : si.smoo;
+    zaf = fdelgroup(vslider("[01] ZA FEEDBACK [style:knob] [midi:ctrl 4]", 0.,0.,1.0,0.01)) : si.smoo;
+    zag = fdelgroup(vslider("[01] ZA GAIN [style:knob][midi:ctrl 88]", 0.,0.,1.0,0.01)) : si.smoo;
 };
 
 //------------------------------------------------------------------------- MAIN
@@ -90,7 +90,7 @@ main = _ <: qaqf, (er8comb <: si.bus(4), (ermix : waza)) :> _,_,_,_;
 
 input = *(ingain) : inmeter
   with{
-    ingain = hslider("[00] INPUT GAIN", 0, -70, +12, 0.1) : ba.db2linear : si.smoo;
+    ingain = hslider("[00] INPUT GAIN [midi:ctrl 1]", 0, -70, +12, 0.1) : ba.db2linear : si.smoo;
     inmeter(x) = attach(x, an.amp_follower(0.150, x) : ba.linear2db : hbargraph("[01] INPUT METER [unit:dB]", -70, +5));
   };
 
