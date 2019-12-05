@@ -17,8 +17,9 @@ ergroup(x) = maingroup(hgroup("[02] EARLY REFLECTIONS", x));
 //-------------------------------------------------- UNIPOLAR POITIVE OSCILLATOR
 poscil = oscgroup(os.oscsin(freq) : *(amp) : +(amp))
    with{
-     freq = vslider("[01] QF FRQ [style:knob] [midi:ctrl 2]", 0.1,0.1,320,0.01) : si.smoo;
-     amp = vslider("[02] QA AMP [style:knob] [midi:ctrl 81]", 0.5,0.0,0.5,0.01) : si.smoo;
+     posctrl = vgroup("[01] POSC", x);
+     freq = posctrl(vslider("[01] QF FRQ [style:knob] [midi:ctrl 2]", 0.1,0.1,320,0.01)) : si.smoo;
+     amp = posctrl(vslider("[02] QA AMP [midi:ctrl 81]", 0.5,0.0,0.5,0.01)) : si.smoo;
    };
 
 //process = poscil;
@@ -28,7 +29,7 @@ qaqf(x) = de.fdelayltv(1,writesize, readindex, x) : *(gain) <: _,*(0),_,*(0)
   with{
     writesize = ba.sec2samp(0.046);
     readindex = poscil*(writesize);
-    gain = delgroup(vslider("[03] QA GAIN [style:knob][midi:ctrl 82]", 0,0,5,0.01) : si.smoo);
+    gain = delgroup(vslider("[03] QA GAIN [midi:ctrl 82]", 0,0,5,0.01) : si.smoo);
   };
 
 //process = qaqf;
@@ -88,22 +89,22 @@ waza = _ <: wa, za <: _,_,_,_
 main = _ <: qaqf, (er8comb <: si.bus(4), (ermix : waza)) :> _,_,_,_;
 
 
-input = *(ingain) : inmeter
+input = hgroup("[01] INPUT", *(ingain) : inmeter)
   with{
-    ingain = hslider("[00] INPUT GAIN [midi:ctrl 1]", 0, -70, +12, 0.1) : ba.db2linear : si.smoo;
-    inmeter(x) = attach(x, an.amp_follower(0.150, x) : ba.linear2db : hbargraph("[01] INPUT METER [unit:dB]", -70, +5));
+    ingain = vslider("[00] GAIN [midi:ctrl 1]", 0, -70, +12, 0.1) : ba.db2linear : si.smoo;
+    inmeter(x) = attach(x, an.amp_follower(0.150, x) : ba.linear2db : vbargraph("[01] METER [unit:dB]", -70, +5));
   };
 
 //---------------------------------------------------------------- OUTPUT SECTION
-outs = vgroup("[99] OUTPUT METERS", ch1meter, ch2meter, ch3meter, ch4meter)
+outs = hgroup("[99] OUTPUT METERS", ch1meter, ch2meter, ch3meter, ch4meter)
   with{
-    ch1meter(x) = attach(x, an.amp_follower(0.150, x) : ba.linear2db : hbargraph("[01] CH 1[unit:dB]", -70, +5));
-    ch2meter(x) = attach(x, an.amp_follower(0.150, x) : ba.linear2db : hbargraph("[02] CH 2[unit:dB]", -70, +5));
-    ch3meter(x) = attach(x, an.amp_follower(0.150, x) : ba.linear2db : hbargraph("[03] CH 3[unit:dB]", -70, +5));
-    ch4meter(x) = attach(x, an.amp_follower(0.150, x) : ba.linear2db : hbargraph("[04] CH 4[unit:dB]", -70, +5));
+    ch1meter(x) = attach(x, an.amp_follower(0.150, x) : ba.linear2db : vbargraph("[01] CH 1[unit:dB]", -70, +5));
+    ch2meter(x) = attach(x, an.amp_follower(0.150, x) : ba.linear2db : vbargraph("[02] CH 2[unit:dB]", -70, +5));
+    ch3meter(x) = attach(x, an.amp_follower(0.150, x) : ba.linear2db : vbargraph("[03] CH 3[unit:dB]", -70, +5));
+    ch4meter(x) = attach(x, an.amp_follower(0.150, x) : ba.linear2db : vbargraph("[04] CH 4[unit:dB]", -70, +5));
   };
 
 //----------------------------------------------------------------------- LR-MIX
 lrmix = _,_; // only for monitoring, not for live
 
-process = input : main : outs ; // :> lrmix ;
+process = hgroup("",input : main : outs) ; // :> lrmix ;
