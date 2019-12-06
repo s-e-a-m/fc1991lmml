@@ -1,9 +1,10 @@
 declare name "Michelangelo Lupone. Mobile Locale - 1991";
 declare version "001";
 declare author "Giuseppe Silvi";
-declare copyright "Giuseppe Silvi 2019";
-declare reference "giuseppesilvi.com";
+declare license "GNU-GPL-v3";
+declare copyright "(c)SEAM 2019";
 declare description "Michelangelo Lupone, Mobile Locale - FLY30 Porting";
+declare options "[midi:on]";
 
 import("stdfaust.lib");
 import("../faust-libraries/seam.lib");
