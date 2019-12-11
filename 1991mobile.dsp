@@ -132,4 +132,4 @@ outs = par(i, 4, out(i));
 //----------------------------------------------------------------------- LR-MIX
 lrmix = _,_; // only for monitoring, not for live
 
-process = tgroup("PANELS", microphones :> hgroup("[03] MAIN", input : main : outs)) :> lrmix ;
+process = tgroup("PANELS", microphones :> hgroup("[03] MAIN", input : main : outs));// :> lrmix ;
