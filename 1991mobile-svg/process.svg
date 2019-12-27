@@ -3,11 +3,11 @@
 <rect x="1.000000" y="1.000000" width="309.000000" height="211.000000" rx="0" ry="0" style="stroke:none;fill:#cccccc;"/>
 <rect x="0.000000" y="0.000000" width="309.000000" height="211.000000" rx="0" ry="0" style="stroke:none;fill:#ffffff;"/>
 <text x="10.000000" y="7.000000" font-family="Arial" font-size="7"></text>
-<a xlink:href="microphones-0x7fa1399b2800.svg">
+<a xlink:href="microphones-0x7fc7e618fa60.svg">
 <rect x="43.000000" y="35.000000" width="51.600000" height="144.000000" rx="0" ry="0" style="stroke:none;fill:#cccccc;"/>
 <rect x="42.000000" y="34.000000" width="51.600000" height="144.000000" rx="0" ry="0" style="stroke:none;fill:#003366;"/>
 </a>
-<a xlink:href="microphones-0x7fa1399b2800.svg">
+<a xlink:href="microphones-0x7fc7e618fa60.svg">
 <text x="67.800000" y="108.000000" font-family="Arial" font-size="7" text-anchor="middle" fill="#FFFFFF">microphones</text>
 </a>
 <circle cx="44.000000" cy="36.000000" r="1"/>
@@ -47,31 +47,31 @@
 <line x1="39.000000" y1="167.000000" x2="42.000000" y2="166.000000"  transform="rotate(0.000000,42.000000,166.000000)" style="stroke: black; stroke-width:0.25;"/>
 <line x1="39.000000" y1="173.000000" x2="42.000000" y2="174.000000"  transform="rotate(0.000000,42.000000,174.000000)" style="stroke: black; stroke-width:0.25;"/>
 <line x1="39.000000" y1="175.000000" x2="42.000000" y2="174.000000"  transform="rotate(0.000000,42.000000,174.000000)" style="stroke: black; stroke-width:0.25;"/>
-<a xlink:href="input-0x7fa1399bbfa0.svg">
+<a xlink:href="input-0x7fc7e61970d0.svg">
 <rect x="165.600000" y="95.000000" width="25.800000" height="24.000000" rx="0" ry="0" style="stroke:none;fill:#cccccc;"/>
 <rect x="164.600000" y="94.000000" width="25.800000" height="24.000000" rx="0" ry="0" style="stroke:none;fill:#003366;"/>
 </a>
-<a xlink:href="input-0x7fa1399bbfa0.svg">
+<a xlink:href="input-0x7fc7e61970d0.svg">
 <text x="177.500000" y="108.000000" font-family="Arial" font-size="7" text-anchor="middle" fill="#FFFFFF">input</text>
 </a>
 <circle cx="166.600000" cy="96.000000" r="1"/>
 <line x1="161.600000" y1="105.000000" x2="164.600000" y2="106.000000"  transform="rotate(0.000000,164.600000,106.000000)" style="stroke: black; stroke-width:0.25;"/>
 <line x1="161.600000" y1="107.000000" x2="164.600000" y2="106.000000"  transform="rotate(0.000000,164.600000,106.000000)" style="stroke: black; stroke-width:0.25;"/>
-<a xlink:href="main-0x7fa139aea790.svg">
+<a xlink:href="main-0x7fc7e6d4d250.svg">
 <rect x="199.400000" y="91.000000" width="25.800000" height="32.000000" rx="0" ry="0" style="stroke:none;fill:#cccccc;"/>
 <rect x="198.400000" y="90.000000" width="25.800000" height="32.000000" rx="0" ry="0" style="stroke:none;fill:#003366;"/>
 </a>
-<a xlink:href="main-0x7fa139aea790.svg">
+<a xlink:href="main-0x7fc7e6d4d250.svg">
 <text x="211.300000" y="108.000000" font-family="Arial" font-size="7" text-anchor="middle" fill="#FFFFFF">main</text>
 </a>
 <circle cx="200.400000" cy="92.000000" r="1"/>
 <line x1="195.400000" y1="105.000000" x2="198.400000" y2="106.000000"  transform="rotate(0.000000,198.400000,106.000000)" style="stroke: black; stroke-width:0.25;"/>
 <line x1="195.400000" y1="107.000000" x2="198.400000" y2="106.000000"  transform="rotate(0.000000,198.400000,106.000000)" style="stroke: black; stroke-width:0.25;"/>
-<a xlink:href="outs-0x7fa139aed1e0.svg">
+<a xlink:href="outs-0x7fc7e6d4fca0.svg">
 <rect x="233.200000" y="91.000000" width="25.800000" height="32.000000" rx="0" ry="0" style="stroke:none;fill:#cccccc;"/>
 <rect x="232.200000" y="90.000000" width="25.800000" height="32.000000" rx="0" ry="0" style="stroke:none;fill:#003366;"/>
 </a>
-<a xlink:href="outs-0x7fa139aed1e0.svg">
+<a xlink:href="outs-0x7fc7e6d4fca0.svg">
 <text x="245.100000" y="108.000000" font-family="Arial" font-size="7" text-anchor="middle" fill="#FFFFFF">outs</text>
 </a>
 <circle cx="234.200000" cy="92.000000" r="1"/>
