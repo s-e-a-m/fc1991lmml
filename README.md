@@ -17,6 +17,8 @@ and sound qualities.
 
 ![portingdiagram](https://github.com/s-e-a-m/fc1991lmml/blob/master/1991mobile-svg/main-0x7ffb4af79540.svg)
 
+## DSP
+
 [Here you can navigate the block diagram](https://s-e-a-m.github.io/fc1991lmml/1991mobile-svg//process.svg).
 
 ## GUI
