@@ -19,4 +19,4 @@ and sound qualities.
 
 ## GUI
 
-![GUI](https://github.com/s-e-a-m/fc1991lmml/blob/master/resources/GUI.png)
+![GUI](https://github.com/s-e-a-m/fc1991lmml/blob/master/resources/GUI-02.png)
