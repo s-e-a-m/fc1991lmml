@@ -15,12 +15,12 @@ and sound qualities.
 
 ## Porting general diagram
 
-![portingdiagram](https://github.com/s-e-a-m/fc1991lmml/blob/master/1991mobile-svg/main-0x7ffb4af79540.svg)
+![portingdiagram](https://raw.githubusercontent.com/s-e-a-m/fc1991lmml/master/1991mobile-svg/main-0x7ffb4af79540.svg)
 
 ## DSP
 
-[Here you can navigate the block diagram](https://s-e-a-m.github.io/fc1991lmml/1991mobile-svg//process.svg).
+[Here you can navigate the block diagram](https://s-e-a-m.github.io/fc1991lmml/1991mobile-svg/process.svg).
 
 ## GUI
 
-![GUI](https://github.com/s-e-a-m/fc1991lmml/blob/master/resources/GUI-02.png)
+![GUI](https://raw.githubusercontent.com/s-e-a-m/fc1991lmml/master/resources/GUI-02.png)
