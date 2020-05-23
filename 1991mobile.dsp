@@ -7,7 +7,9 @@ declare description "Michelangelo Lupone, Mobile Locale - FLY30 Porting";
 declare options "[midi:on]";
 
 import("stdfaust.lib");
-import("../faust-libraries/seam.lib");
+import("../faust-libraries/hardware.lib");
+import("../faust-libraries/measurement.lib");
+import("../faust-libraries/mixer.lib");
 
 //----------------------------------------------------------------------- GROUPS
 maingroup(x) = hgroup("[01] MAIN", x);
@@ -45,10 +47,10 @@ qaqf(x) = de.fdelayltv(1,writesize, readindex, x) : *(gain) <: _,*(0),_,*(0)
 
 //------------------------------------------------------------ EARLY REFLECTIONS
 er8comb = _ <:
-  g1*(0.5*(fi.fb_comb(maxdel,er1,b0,aN) + fi.fb_comb(maxdel,er2,b0,aN))),
-  g2*(0.5*(fi.fb_comb(maxdel,er3,b0,aN) + fi.fb_comb(maxdel,er4,b0,aN))),
-  g3*(0.5*(fi.fb_comb(maxdel,er5,b0,aN) + fi.fb_comb(maxdel,er6,b0,aN))),
-  g4*(0.5*(fi.fb_comb(maxdel,er7,b0,aN) + fi.fb_comb(maxdel,er8,b0,aN)))
+  g1*(0.5*(fi.fb_comb(maxdel,er1,0.5,0.5) + fi.fb_comb(maxdel,er2,0.9,0.9))),
+  g2*(0.5*(fi.fb_comb(maxdel,er3,0.87,0.87) + fi.fb_comb(maxdel,er4,0.7,0.7))),
+  g3*(0.5*(fi.fb_comb(maxdel,er5,0.55,0.55) + fi.fb_comb(maxdel,er6,0.8,0.8))),
+  g4*(0.5*(fi.fb_comb(maxdel,er7,0.6,0.6) + fi.fb_comb(maxdel,er8,0.95,0.95)))
     with{
       maxdel = ma.SR/10 : int;
       er1 = ba.sec2samp(0.087) : int;
@@ -87,10 +89,10 @@ waza = _ <: wa, za <: _,_,_,_
     za = *(zag) : ( ro.cross(2) : - : fdel2) ~ *(zaf);
     // WA&ZA INTERFACE
     wgroup(x) = fdelgroup(vgroup("[01] WA", x));
-    waf = wgroup(vslider("[01] WAFB [style:knob] [midi:ctrl 7]", 0.,0.,1.0,0.01)) : si.smoo;
+    waf = wgroup(vslider("[01] WAFB [style:knob] [midi:ctrl 7]", 0.,0.,0.9,0.01)) : si.smoo;
     wag = wgroup(vslider("[02] WAG [midi:ctrl 87]", 0.,0.,1.0,0.01)) : si.smoo;
     zgroup(x) = fdelgroup(vgroup("[02] ZA", x));
-    zaf = zgroup(vslider("[01] ZAFB [style:knob] [midi:ctrl 8]", 0.,0.,1.0,0.01)) : si.smoo;
+    zaf = zgroup(vslider("[01] ZAFB [style:knob] [midi:ctrl 8]", 0.,0.,0.9,0.01)) : si.smoo;
     zag = zgroup(vslider("[02] ZAG [midi:ctrl 88]", 0.,0.,1.0,0.01)) : si.smoo;
 };
 
@@ -109,23 +111,13 @@ fmic = hgroup("[06] MIC F", chstrip : *(ingain) : inmeter);
 gmic = hgroup("[07] MIC G", chstrip : *(ingain) : inmeter);
 hmic = hgroup("[07] MIC H", chstrip : *(ingain) : inmeter);
 
-input = hgroup("[01] INPUT MIX", inpeq : svmeter);
+input = hgroup("[01] INPUT MIX", pvmeter);
 
 ingain = vslider("[02] GAIN", 0, -70, +12, 0.1) : ba.db2linear : si.smoo;
 inmeter(x) = attach(x, an.amp_follower(0.150, x) : ba.linear2db : vbargraph("[03] METER [unit:dB]", -70, +5));
 
-microphones = si.bus(18) <: hgroup("[01] MIC A B C D", amic, bmic, cmic, dmic), hgroup("[02] MIC E F G H", emic, fmic, gmic, hmic);
-
-//------------------------------------------------------------------------------
-//--------------------------------------------------------------- OUTPUT SECTION
-//------------------------------------------------------- 4ch 1-3 LEFT 2-4 RIGHT
-// outs = hgroup("[99] OUTPUT METERS", outfbank , ch2meter, ch3meter, ch4meter)
-//   with{
-//     ch1meter(x) = attach(x, an.amp_follower(0.150, x) : ba.linear2db : vbargraph("[01] CH 1[unit:dB]", -70, +5));
-//     ch2meter(x) = attach(x, an.amp_follower(0.150, x) : ba.linear2db : vbargraph("[02] CH 2[unit:dB]", -70, +5));
-//     ch3meter(x) = attach(x, an.amp_follower(0.150, x) : ba.linear2db : vbargraph("[03] CH 3[unit:dB]", -70, +5));
-//     ch4meter(x) = attach(x, an.amp_follower(0.150, x) : ba.linear2db : vbargraph("[04] CH 4[unit:dB]", -70, +5));
-//   };
+// using Fireface 800 chstrip - 18 ch
+microphones = si.bus(20) <: hgroup("[01] MIC A B C D", amic, bmic, cmic, dmic), hgroup("[02] MIC E F G H", emic, fmic, gmic, hmic);
 
 outs = par(i, 4, out(i));
 
