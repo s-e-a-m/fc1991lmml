@@ -15,7 +15,7 @@ and sound qualities.
 
 ## Porting general diagram
 
-![portingdiagram](https://github.com/s-e-a-m/fc1991lmml/blob/master/1991mobile-svg/main-0x7f84353447b0.svg)
+![portingdiagram](https://github.com/s-e-a-m/fc1991lmml/blob/master/1991mobile-svg/main-0x7ffb4af79540.svg)
 
 ## GUI
 
