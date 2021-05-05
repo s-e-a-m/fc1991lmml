@@ -48,7 +48,9 @@ qaqf(x) = de.fdelayltv(1,writesize, readindex, x) : *(gain) <: _,*(0),_,*(0)
 //------------------------------------------------------------ EARLY REFLECTIONS
 // da mettere in libreria filtri
 comb(t,g) = (+ : @(min(max(t-1,0),ma.SR)))~*(g) : mem;
+combN(N)= ro.interleave(N,3) : par(i,N,comb);
 
+// tempi
 er1 = ba.sec2samp(0.087);
 er2 = ba.sec2samp(0.026);
 er3 = ba.sec2samp(0.032);
@@ -58,7 +60,7 @@ er6 = ba.sec2samp(0.047);
 er7 = ba.sec2samp(0.059);
 er8 = ba.sec2samp(0.022);
 
-combN(N)= ro.interleave(N,3) : par(i,N,comb);
+// feedback
 g8 = par(i,8,0);
 
 er8comb = combN(8,(er1,er2,er3,er4,er5,er6,er7,er8),g8):par(i,4,+*(0.5));
