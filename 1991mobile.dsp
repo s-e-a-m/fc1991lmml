@@ -46,30 +46,22 @@ qaqf(x) = de.fdelayltv(1,writesize, readindex, x) : *(gain) <: _,*(0),_,*(0)
 //process = qaqf;
 
 //------------------------------------------------------------ EARLY REFLECTIONS
-er8comb = _ <:
-  g1*(0.5*(fi.fb_comb(maxdel,er1,0.5,0.5) + fi.fb_comb(maxdel,er2,0.9,0.9))),
-  g2*(0.5*(fi.fb_comb(maxdel,er3,0.87,0.87) + fi.fb_comb(maxdel,er4,0.7,0.7))),
-  g3*(0.5*(fi.fb_comb(maxdel,er5,0.55,0.55) + fi.fb_comb(maxdel,er6,0.8,0.8))),
-  g4*(0.5*(fi.fb_comb(maxdel,er7,0.6,0.6) + fi.fb_comb(maxdel,er8,0.95,0.95)))
-    with{
-      maxdel = ma.SR/10 : int;
-      er1 = ba.sec2samp(0.087) : int;
-      er2 = ba.sec2samp(0.026) : int;
-      er3 = ba.sec2samp(0.032) : int;
-      er4 = ba.sec2samp(0.053) : int;
-      er5 = ba.sec2samp(0.074) : int;
-      er6 = ba.sec2samp(0.047) : int;
-      er7 = ba.sec2samp(0.059) : int;
-      er8 = ba.sec2samp(0.022) : int;
-      b0 = .5; // gain applied to delay-line input and forwarded to output
-      aN = .5; // minus the gain applied to delay-line output before sum
-      g1 = ergroup(vslider("[01] ER 1 [midi:ctrl 83]", 0,0,1,0.01)) : si.smoo;
-      g2 = ergroup(vslider("[02] ER 2 [midi:ctrl 84]", 0,0,1,0.01)) : si.smoo;
-      g3 = ergroup(vslider("[03] ER 3 [midi:ctrl 85]", 0,0,1,0.01)) : si.smoo;
-      g4 = ergroup(vslider("[04] ER 4 [midi:ctrl 86]", 0,0,1,0.01)) : si.smoo;
-  };
+// da mettere in libreria filtri
+comb(t,g) = (+ : @(min(max(t-1,0),ma.SR)))~*(g) : mem;
 
-ermix = +++:*(0.25);
+er1 = ba.sec2samp(0.087);
+er2 = ba.sec2samp(0.026);
+er3 = ba.sec2samp(0.032);
+er4 = ba.sec2samp(0.053);
+er5 = ba.sec2samp(0.074);
+er6 = ba.sec2samp(0.047);
+er7 = ba.sec2samp(0.059);
+er8 = ba.sec2samp(0.022);
+
+combN(N)= ro.interleave(N,3) : par(i,N,comb);
+g8 = par(i,8,0);
+
+er8comb = combN(8,(er1,er2,er3,er4,er5,er6,er7,er8),g8):par(i,4,+*(0.5));
 
 //------------------------------------------------------------------------ WA&ZA
 waza = _ <: wa, za <: _,_,_,_
